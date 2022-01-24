@@ -1,1 +1,1 @@
-# poisoning_hmms
+# Code for Poisoning HMMs paper
