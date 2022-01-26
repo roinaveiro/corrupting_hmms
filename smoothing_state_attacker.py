@@ -16,6 +16,7 @@ class ss_attacker():
 
 
 
+
 if __name__ == "__main__":
 
     priors     = np.array([0.5,0.5])

@@ -3,6 +3,16 @@ from hmmlearn import hmm
 
 
 class HMM(hmm.MultinomialHMM):
+
+    '''
+    Builts HMM
+
+    Parameters
+    ----------
+    n_components : int
+        Number of hidden states
+
+    '''
     
     def __init__(self, n_components):
         
@@ -13,13 +23,78 @@ class HMM(hmm.MultinomialHMM):
         return self.predict_proba(X)[t]
     
     def alpha(self, X):
-        pass
+
+        alphas = self._do_forward_pass( 
+            self._compute_log_likelihood(X) )[1]
+
+        return alphas
     
     def beta(self, X):
-        pass
+        
+        betas = self._do_backward_pass( 
+            self._compute_log_likelihood(X) )[0]
+            
+        return betas
     
     def nu(self, X):
-        pass
+        V   = np.zeros([len(X), self.n_components]) 
+        Ptr = np.zeros([len(X), self.n_components]) 
+
+        lemissionprob_ = np.log(self.emissionprob_)
+        ltransmat_     = np.log(self.transmat_)
+        lstartprob_   = np.log(self.startprob_)
+
+        # Init
+        V[0] = lemissionprob_[:, X[0].item()] + lstartprob_
+
+        # Forward
+        for t in np.arange(1 , len(X) ):
+
+            V[t]   = ( lemissionprob_[:, X[t].item()] + 
+                np.max( ltransmat_ + V[t-1], axis=1 ) )
+
+            Ptr[t] =  np.argmax( ltransmat_ + V[t-1], axis=1 )
+
+        # Backward
+
+        z_max = np.ones(len(X), dtype=int)
+
+        z_max[-1] = np.argmax(V[-1])
+
+        for t in np.arange(len(X)-2, -1, -1):    
+            z_max[t] = Ptr[t+1, z_max[t+1]]
+            
+        return V, z_max
+
+
+    def sample_mat(self, p, n=1, k=1000):
+        '''
+        Sample transition/emission matrix
+
+        Parameters
+        ----------
+        p : numpy.array
+            Each row is the mean of the Dirichlet we sample from.
+        n : int
+            Number of samples
+        k : int
+            The larget k the smaller the variance
+
+        '''
+
+        mat = np.zeros( [n, p.shape[0], p.shape[1]] )
+
+        for i in range(n):
+
+            mat[i] = np.apply_along_axis(lambda x: 
+                np.random.dirichlet(x, 1), 1, k*p).reshape(p.shape[0],-1)
+
+        return mat
+
+    
+
+
+
         
 
 
