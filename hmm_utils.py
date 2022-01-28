@@ -32,7 +32,7 @@ class HMM(hmm.MultinomialHMM):
     def beta(self, X):
         
         betas = self._do_backward_pass( 
-            self._compute_log_likelihood(X) )[0]
+            self._compute_log_likelihood(X) )
             
         return betas
     
