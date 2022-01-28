@@ -11,7 +11,18 @@ class ss_attacker():
         self.w2 = w2
 
 
-    def expected_utility(A):
+    def expected_utility(self, A, N=1000):
+
+        exp_util = 0.0
+        for j in range(N):
+            # Sample HMM params
+            # Sample rhos
+            exp_util += self.utility(A)
+            pass
+
+        return exp_util/N
+
+    def utility(self, A):
         pass
 
 

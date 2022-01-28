@@ -8,3 +8,5 @@ T = 10
 theta =
 epsilon = 
 zeta = 
+
+k = 1000
