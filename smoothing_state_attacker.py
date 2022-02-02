@@ -10,6 +10,9 @@ class ss_attacker():
         self.w1 = w1
         self.w2 = w2
 
+        self.t     = 3.0
+        self.state = 1
+
 
     def expected_utility(self, A, N=1000):
 

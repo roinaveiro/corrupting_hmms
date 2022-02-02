@@ -14,9 +14,10 @@ class HMM(hmm.MultinomialHMM):
 
     '''
     
-    def __init__(self, n_components):
+    def __init__(self, n_components, n_obs):
         
         super().__init__(n_components)
+        self.n_obs = n_obs
         
   
     def smoothing(self, X, t):
@@ -90,6 +91,31 @@ class HMM(hmm.MultinomialHMM):
                 np.random.dirichlet(x, 1), 1, k*p).reshape(p.shape[0],-1)
 
         return mat
+
+    def sample_rho(self, t, theta):
+        '''
+        Sample success matrix
+
+        Parameters
+        ----------
+
+        '''
+
+
+    def attack_X(self, X, rho, z):
+        '''
+        Given attack matrix z and success matrix rho, transforms
+        X into attacked version
+        
+        Parameters
+        ----------
+    
+
+        '''
+        pass
+
+    def generate_z(self, t):
+        pass
 
     
 
