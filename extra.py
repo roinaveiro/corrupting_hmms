@@ -4,37 +4,33 @@ from smoothing_state_attacker import ss_attacker
 from params import *
 
 
-def monte_carlo_enumeration_state_attraction_repulsion(hmm, ss_att, g_w, N, x_vector, utility_function ):
+def monte_carlo_enumeration(hmm, k_value, attacker,  N, x_vector):
     
-    n_states, n_obs = g_w['B'].shape
     Z_set = hmm.generate_z(len(x_vector))
-    Z_len = len(Z_set)
-    u_z_vector = np.zeros(Z_len) 
-    
-    for i_z,z_matrix in (enumerate(Z_set)):
-        
-        sum_u_values  = 0 
+    u_z_matrix = np.zeros((len(Z_set), N)) 
+    transtion_mat_list = hmm.sample_mat(hmm.transmat_, n= N, k= k_value)
+    emission_mat_list = hmm.sample_mat(hmm.emissionprob_, n= N, k= k_value)
+    priors_vec_list = hmm.sample_mat(np.array([list(hmm.startprob_)]), n=N, k=k_value)
+
+    for i_z,z_matrix in (enumerate(Z_set)):  
         
         for n in range(N):
             
-            transtion_mat = g_w['A']
-            emission_mat = g_w['B']
-            priors_vec = g_w['pi']
-            hmm_n = HMM(n_states, n_obs)
-            hmm_n.startprob_ = priors_vec
-            hmm_n.transmat_ = transtion_mat
-            hmm_n.emissionprob_ = emission_mat
-            rho_matrix = np.ones([len(x_vector),n_obs]) 
+            hmm_n = HMM(hmm.n_components, hmm.n_obs)
+            hmm_n.startprob_ = priors_vec_list[n].reshape(-1)
+            hmm_n.transmat_ = transtion_mat_list[n]
+            hmm_n.emissionprob_ = emission_mat_list[n]
+            rho_matrix = np.ones([len(x_vector),hmm.n_obs]) 
             y_t = hmm.attack_X(X= x_vector, z_matrix = z_matrix, rho_matrix = rho_matrix).astype('int')
-            u_value = utility_function(hmm = hmm_n, z_matrix = z_matrix, x_obs_vector = x_vector, y_t = y_t)
-            sum_u_values += u_value
+            u_value = attacker.utility(hmm = hmm_n, z_matrix = z_matrix, x_obs_vector = x_vector, y_t = y_t)
+            u_z_matrix[i_z][n] = u_value
             
-        u_z_vector[i_z] = sum_u_values/N
-                        
+    u_z_vector = np.mean(u_z_matrix, axis=1)     
     arg_max = np.argmax(u_z_vector)
     z_star = Z_set[arg_max]
     
-    return z_star 
+    return z_star, u_z_vector
+
 
 
 
@@ -79,7 +75,7 @@ if __name__ == "__main__":
         
     print('----------------------- Find optimal attack ------------------------')
     
-    print(monte_carlo_enumeration_state_attraction_repulsion(hmm = hmm,ss_att=ss_att, g_w = g_w_dict, N = 10, x_vector = X, utility_function = ss_att.utility))
+    print(monte_carlo_enumeration(hmm = hmm, k_value = 100000, attacker = ss_att, N = 5, x_vector = X))
 
 
 
