@@ -86,7 +86,7 @@ class HMM(hmm.MultinomialHMM):
         n : int
             Number of samples
         k : int
-            The larget k the smaller the variance
+            The larger k the smaller the variance
 
         '''
 

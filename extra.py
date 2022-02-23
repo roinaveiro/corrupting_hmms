@@ -4,23 +4,23 @@ from smoothing_state_attacker import ss_attacker
 from params import *
 
 
-def monte_carlo_enumeration(hmm, k_value, attacker,  N, x_vector):
+def monte_carlo_enumeration(hmm, k_value, attacker,  N, x_vector, theta_prob_vec):
     
     Z_set = hmm.generate_z(len(x_vector))
     u_z_matrix = np.zeros((len(Z_set), N)) 
     transtion_mat_list = hmm.sample_mat(hmm.transmat_, n= N, k= k_value)
     emission_mat_list = hmm.sample_mat(hmm.emissionprob_, n= N, k= k_value)
     priors_vec_list = hmm.sample_mat(np.array([list(hmm.startprob_)]), n=N, k=k_value)
-
+    rho_matrix_list = hmm.sample_rho(T= N, theta_v = theta_prob_vec)
+    
     for i_z,z_matrix in (enumerate(Z_set)):  
         
         for n in range(N):
-            
             hmm_n = HMM(hmm.n_components, hmm.n_obs)
             hmm_n.startprob_ = priors_vec_list[n].reshape(-1)
             hmm_n.transmat_ = transtion_mat_list[n]
             hmm_n.emissionprob_ = emission_mat_list[n]
-            rho_matrix = np.ones([len(x_vector),hmm.n_obs]) 
+            rho_matrix = rho_matrix_list[n]
             y_t = hmm.attack_X(X= x_vector, z_matrix = z_matrix, rho_matrix = rho_matrix).astype('int')
             u_value = attacker.utility(hmm = hmm_n, z_matrix = z_matrix, x_obs_vector = x_vector, y_t = y_t)
             u_z_matrix[i_z][n] = u_value
@@ -30,8 +30,6 @@ def monte_carlo_enumeration(hmm, k_value, attacker,  N, x_vector):
     z_star = Z_set[arg_max]
     
     return z_star, u_z_vector
-
-
 
 
 
@@ -75,8 +73,7 @@ if __name__ == "__main__":
         
     print('----------------------- Find optimal attack ------------------------')
     
-    print(monte_carlo_enumeration(hmm = hmm, k_value = 100000, attacker = ss_att, N = 5, x_vector = X))
-
+    print(monte_carlo_enumeration(hmm = hmm, k_value = 100000, attacker = ss_att, N = 5, x_vector = X, theta_prob_vec =np.array([0.99,0.99,0.99,0.99,0.99,0.99])))
 
 
 
