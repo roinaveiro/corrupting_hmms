@@ -1,6 +1,6 @@
 import numpy as np
 from hmmlearn import hmm
-from itertools import product
+
 
 class HMM(hmm.MultinomialHMM):
 
@@ -98,7 +98,7 @@ class HMM(hmm.MultinomialHMM):
 
         return mat
 
-    def sample_rho(self, T, theta_v):
+    def sample_rho(self, T, theta_v, n=1):
         '''
         Sample success matrix
 
@@ -107,36 +107,17 @@ class HMM(hmm.MultinomialHMM):
         
         '''
         
-        rho =  np.zeros([T, self.n_obs])
-        for n in range(self.n_obs):
-            rho[:,n] = np.random.choice([1,0],p=[theta_v[n], 1-theta_v[n]], size= T)
+        rho =  np.zeros([n, T, self.n_obs])
+
+        for i in range(n):
+
+            for j in range(self.n_obs):
+                rho[i,:,j] = np.random.choice([1,0],p=[theta_v[j], 
+                            1-theta_v[j]], size= T)
 
         return rho
 
-        
 
-    def attack_X(self, X, rho_matrix, z_matrix):
-        '''
-        Given attack matrix z and success matrix rho, transforms
-        X into attacked version
-        
-        Parameters
-        ----------
-        '''
-        t, n_obs = z_matrix.shape
-        j_obs = np.arange(0,z_matrix.shape[1])
-        y_t_1 = np.dot(z_matrix* rho_matrix, j_obs)
-        y_t_2 = np.sum(z_matrix *(1-rho_matrix)* X, axis = 1)
-        y_t = (y_t_1 + y_t_2).reshape(z_matrix.shape[0], 1)
-
-        return y_t
-
-
-    def generate_z(self, T):
-        
-        diag_matrix =  np.diag(np.ones(self.n_obs))
-
-        return np.array( list(product((diag_matrix), repeat = T)))
     
 
 
