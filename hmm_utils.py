@@ -16,12 +16,17 @@ class HMM(hmm.MultinomialHMM):
     
     def __init__(self, n_components, n_obs):
         
-        super().__init__(n_components)
+        super().__init__(n_components)  ### import requirement hmm version 0.2.6
         self.n_obs = n_obs
         
   
     def smoothing(self, X, t):
-        return self.predict_proba(X)[t]
+        ## We consider that time starts at t = 1
+        if t<=0:
+            raise ValueError('t must be >=1')
+
+
+        return self.predict_proba(X)[t-1]
     
     def alpha(self, X):
 
@@ -37,7 +42,9 @@ class HMM(hmm.MultinomialHMM):
             
         return betas
     
+    
     def nu(self, X):
+        
         V   = np.zeros([len(X), self.n_components]) 
         Ptr = np.zeros([len(X), self.n_components]) 
 
@@ -79,7 +86,7 @@ class HMM(hmm.MultinomialHMM):
         n : int
             Number of samples
         k : int
-            The larget k the smaller the variance
+            The larger k the smaller the variance
 
         '''
 
@@ -87,35 +94,29 @@ class HMM(hmm.MultinomialHMM):
 
         for i in range(n):
 
-            mat[i] = np.apply_along_axis(lambda x: 
-                np.random.dirichlet(x, 1), 1, k*p).reshape(p.shape[0],-1)
+            mat[i] = np.apply_along_axis(lambda x: np.random.dirichlet(x, 1), 1, k*p).reshape(p.shape[0],-1)
 
         return mat
 
-    def sample_rho(self, t, theta):
+    def sample_rho(self, T, theta_v, n=1):
         '''
         Sample success matrix
 
         Parameters
         ----------
-
-        '''
-
-
-    def attack_X(self, X, rho, z):
-        '''
-        Given attack matrix z and success matrix rho, transforms
-        X into attacked version
         
-        Parameters
-        ----------
-    
-
         '''
-        pass
+        
+        rho =  np.zeros([n, T, self.n_obs])
 
-    def generate_z(self, t):
-        pass
+        for i in range(n):
+
+            for j in range(self.n_obs):
+                rho[i,:,j] = np.random.choice([1,0],p=[theta_v[j], 
+                            1-theta_v[j]], size= T)
+
+        return rho
+
 
     
 
@@ -132,29 +133,72 @@ if __name__ == "__main__":
     emission   = np.array([[1/6, 1/6, 1/6, 1/6, 1/6, 1/6],
                         [0.1, 0.1, 0.1, 0.1, 0.1, 0.5]])
 
-    m = HMM(2)
+    hmm = HMM(n_components = 2,  n_obs = 6)
 
-    m.startprob_ = priors
-    m.transmat_ = transition
-    m.emissionprob_ = emission
-
-    X = np.atleast_2d([5, 0, 5, 2, 3, 5, 5, 5, 5, 2, 3, 5, 3, 5,
-     0, 5, 4, 3, 2, 1, 5, 5, 5, 0, 5, 2, 5, 5, 5, 5, 1, 5, 5, 4,
-      5, 2, 0, 3, 1, 5, 3, 1, 3, 3, 2, 1, 1, 4, 5, 4, 4, 1, 0, 0,
-       2, 4, 1, 4, 3, 0, 5, 5, 1, 5, 5, 0, 2, 1, 5, 4, 5, 5, 5, 1,
-        5, 2, 2, 2, 4, 1, 0, 2, 4, 0, 2, 5, 3, 1, 4, 3, 0, 1, 4, 4,
-         5, 3, 2, 5, 2, 1, 1, 2, 4, 2, 2, 4, 1, 4, 5, 5, 3, 5, 4, 5,
-          4, 5, 4, 0, 0, 5, 3, 0, 0, 5, 0, 5, 5, 2, 1, 2, 0, 2, 2, 1,
-           5, 1, 5, 1, 0, 1, 3, 3, 1, 3, 3, 4, 4, 3, 5, 2, 0, 0, 5, 5,
-            5, 5, 5, 1, 5, 4, 2, 0, 2, 0, 2, 3, 1, 5, 0, 3, 5, 2, 5, 5]).T
-
-
-    print(m.decode(X))
-
+    hmm.startprob_ = priors
+    hmm.transmat_ = transition
+    hmm.emissionprob_ = emission
     
-        
-
     
+    print('---------- Initialize HMM ---------')
+
+    # initialize HMM
+
+    hmm.startprob_ = priors
+    hmm.transmat_ = transition
+    hmm.emissionprob_ = emission
+
+    print(hmm)
+
+    print('Priors'   , hmm.startprob_)
+
+    print('Transition matrix')
+    print(hmm.transmat_)
+
+    print('Emission probabilities')
+    print(hmm.emissionprob_)
+
+    X = hmm.sample(5)[0]
+    print('Observation X')
+    print(X)
+    print('Probability of states at time t=4 ---smoothing')
+    print(hmm.smoothing(X,4))
+    print('Compute alphas--(log probabilities)')
+    print(hmm.alpha(X))
+    print('Compute betas--(log probabilities)')
+    print(hmm.beta(X))
+    print('Compute sample matrix ---(high variance)')
+    print('----transition matrix----')
+    print(hmm.sample_mat(hmm.transmat_, n=1, k=10000))
+    print('----emission matrix----')
+    print(hmm.sample_mat(hmm.emissionprob_, n=1, k=10000))
+    print('----priors vector-----')
+    print(hmm.sample_mat(np.array([[0.5,0.5]]) ,n=1, k=10000))
+    print('Compute sample rho - Prob. succesful attack')
+    rho_matrix = hmm.sample_rho(len(X), [0.5, 0.7, 0.6, 0.2 , 0.5, 0.7])
+    print(rho_matrix)
+    print('Compute an attack over observations')
+    print('---------observations--------------')
+    print(X)
+    print('---------prob.succesful attack------')
+    print(rho_matrix)
+    print('---------attack matrix ------------')
+    z_matrix = np.zeros((len(X),hmm.n_obs))
+    z_matrix[:,0] = 1
+    print(z_matrix)
+    print('------------compute attacked observations ----------')
+    Y = (hmm.attack_X(X, rho_matrix, z_matrix))
+    print(Y)
+    print('------------ generate Z set ------------------')
+    Z_set = hmm.generate_z(5)
+    print(Z_set)
+
+
+
+
+
+
+
 
 
 
