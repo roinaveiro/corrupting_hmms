@@ -19,7 +19,7 @@ class nn_RS():
     '''
 
 
-    def __init__(self, attacker, RS_iters=1000, mcts_iters=100, lr=0.05, verbose=True):
+    def __init__(self, attacker, RS_iters=1000, mcts_iters=100, eps=0.1, lr=0.05, verbose=True):
 
 
         self.attacker = attacker
@@ -36,6 +36,7 @@ class nn_RS():
         self.mcts_iters = mcts_iters
 
         self.RS_iters = RS_iters
+        self.eps = eps
 
         self.verbose = verbose
 
@@ -92,7 +93,7 @@ class nn_RS():
                     print("Current action: ")
                     print(self.policy(eps=0.0))
 
-            action = self.policy()
+            action = self.policy(self.eps)
             value  = self.evaluate(action)
             self.update( value, action )
 

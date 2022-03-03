@@ -33,6 +33,7 @@ class boolean_optim_mcts(object):
 
                 if reward >= self.best_result:
                     self.best_state = reached_state
+                    self.best_result = reward
 
                 v.backpropagate(reward)
         else :

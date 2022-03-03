@@ -6,19 +6,19 @@ def return_mat(x, z, i):
     z[i] = x
     return z
 
-def s(t, l=1):
-    return np.exp(-l*t/5)
+def s(t, den=5, l=5):
+    return np.exp(-l*t/den) # Watch out!
     
 def generate_candidate(t, z_init, attacker, N):
 
-    idx = np.random.choice(5)
+    idx = np.random.choice(attacker.T)
     Z_candidates = np.apply_along_axis( 
         lambda x: return_mat(x, z_init, idx), 1, np.eye(attacker.n_obs))
 
     energies = np.zeros( len(Z_candidates) )
 
     for i, z in enumerate(Z_candidates):
-        energies[i] = attacker.expected_utility(z, N)/s(t)
+        energies[i] = attacker.expected_utility(z, N)/s(t, den=attacker.T)
 
 
     p = softmax(energies)
