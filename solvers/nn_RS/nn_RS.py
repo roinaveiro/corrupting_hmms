@@ -10,12 +10,8 @@ from torch.optim import Adam
 from solvers.nn_RS.models import FeedForwardNN
 
 
-
-
-
 class nn_RS():
     '''
-    
     '''
 
 
