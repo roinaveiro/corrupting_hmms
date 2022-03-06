@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from scipy.special import softmax
 from solvers.simulated_annealing import return_mat
 
@@ -52,62 +53,136 @@ def get_mode(samples):
     index = np.argmax(counts)
     return vals[index]
 
-def aps_gibbs(cooling_schedule, attacker, burnin=0.2, verbose=True):
+
+def extract_solution(z_samples, burnin, ix):
+
+    z_star = np.zeros_like(z_samples[0])
+    burnin_end = np.int(burnin * ix)
     
-    Z_set = attacker.generate_attacks()
-    z_init = Z_set[ np.random.choice(Z_set.shape[0]) ]
-                   
-    z_samples = np.zeros( [len(cooling_schedule),
-                           z_init.shape[0], z_init.shape[1]] )
-                   
-    hh = cooling_schedule[0]
+    for j in range(z_star.shape[0]):
+        z_star[j] = get_mode(z_samples[  burnin_end:ix , j ])
 
-    ##
-    hmms = []
-    value = 0
+    return z_star
+    
+ 
+def aps_gibbs(cooling_schedule, attacker, 
+        simulation_seconds=None, burnin=0.1, verbose=True):
 
-    for temp in range(hh):
+    
+    if simulation_seconds is None :
 
-        hmm_sample = attacker.sample_hmm()
-        value += np.log( attacker.utility(z_init, hmm_sample) )
-        hmms.append(hmm_sample)
+        Z_set = attacker.generate_attacks()
+        z_init = Z_set[ np.random.choice(Z_set.shape[0]) ]
+                    
+        z_samples = np.zeros( [len(cooling_schedule),
+                            z_init.shape[0], z_init.shape[1]] )
+                    
+        hh = cooling_schedule[0]
 
-
-    value /= hh
-
-
-    for i, temp in enumerate(cooling_schedule):
-        
-        if verbose:
-            
-            if i%10 == 0:
-                print("Percentage completed:", 
-                np.round( 100*i/len(cooling_schedule), 2) )
-                print("Current state", z_init)
-            
-
-        # Update z
-        for idx in range(attacker.T):
-            z_init = update_z(attacker, hmms, z_init, idx)
-            z_samples[i, idx] = z_init[idx]
-
-        # Update value with new z
+        ##
+        hmms = []
         value = 0
-        for n in range(len(hmms)):
-            value += np.log( 
-                attacker.utility(z_init, hmms[n]) )
-        value /= len(hmms)
 
-        hmms, value = update_probs_metropolis(temp, 
-                                              attacker, hmms, value, z_init)
-        
-    z_star = np.zeros_like(z_init)
-    burnin_end = np.int(burnin * z_samples.shape[0])
+        for temp in range(hh):
 
-    for i in range(z_star.shape[0]):
-        z_star[i] = get_mode(z_samples[  burnin_end:, i ])
+            hmm_sample = attacker.sample_hmm()
+            value += np.log( attacker.utility(z_init, hmm_sample) )
+            hmms.append(hmm_sample)
+
+
+        value /= hh
+
+
+        for i, temp in enumerate(cooling_schedule):
+            
+            if verbose:
+                
+                if i%10 == 0:
+                    print("Percentage completed:", 
+                    np.round( 100*i/len(cooling_schedule), 2) )
+                    print("Current state", z_init)
+                
+
+            # Update z
+            for idx in range(attacker.T):
+                z_init = update_z(attacker, hmms, z_init, idx)
+                z_samples[i, idx] = z_init[idx]
+
+            # Update value with new z
+            value = 0
+            for n in range(len(hmms)):
+                value += np.log( 
+                    attacker.utility(z_init, hmms[n]) )
+            value /= len(hmms)
+
+            hmms, value = update_probs_metropolis(temp, 
+                                                attacker, hmms, value, z_init)
+
+        z_star = extract_solution(z_samples, burnin, z_samples.shape[0])
+        return z_star, z_samples
+
+    else:
+
+        end_time = time.time() + simulation_seconds
+
+        Z_set = attacker.generate_attacks()
+        z_init = Z_set[ np.random.choice(Z_set.shape[0]) ]
+                    
+        z_samples = np.zeros( [len(cooling_schedule),
+                            z_init.shape[0], z_init.shape[1]] )
+                    
+        hh = cooling_schedule[0]
+
+        ##
+        hmms = []
+        value = 0
+
+        for temp in range(hh):
+
+            hmm_sample = attacker.sample_hmm()
+            value += np.log( attacker.utility(z_init, hmm_sample) )
+            hmms.append(hmm_sample)
+
+
+        value /= hh
         
-    return z_star, z_samples
+        assert(time.time() < end_time)
+
+        i = 0
+
+        while time.time() < end_time:
+
+            if i > len(cooling_schedule - 1):
+                z_star = extract_solution(z_samples, burnin, 
+                                          z_samples.shape[0])
+                return z_star, z_samples
+
+
+            temp = cooling_schedule[i]
+
+            # Update z
+            for idx in range(attacker.T):
+                z_init = update_z(attacker, hmms, z_init, idx)
+                z_samples[i, idx] = z_init[idx]
+
+            # Update value with new z
+            value = 0
+            for n in range(len(hmms)):
+                value += np.log( 
+                    attacker.utility(z_init, hmms[n]) )
+            value /= len(hmms)
+
+            hmms, value = update_probs_metropolis(temp, 
+                                                attacker, hmms, value, z_init)
+
+            i += 1
+
+        
+        z_star = extract_solution(z_samples, burnin, i)
+        return z_star, z_samples
+
+
+
 
 
 
