@@ -140,13 +140,13 @@ class aps_gibbs():
                     z_star = self.extract_solution(self.z_samples.shape[0])
                     return z_star, self.z_samples
 
+                
                 temp = self.cooling_schedule[i]
                 z_init, hmms, value = self.update_all(i, temp, z_init, hmms, value)
                 i+=1
-            
-            z_star = self.extract_solution(i)
-            return z_star, self.z_samples
-
+      
+            z_star, quality = self.extract_solution(i)
+            return z_star, quality
 
     
     def get_mode(self, samples):
@@ -162,7 +162,8 @@ class aps_gibbs():
         for j in range(z_star.shape[0]):
             z_star[j] = self.get_mode(self.z_samples[  burnin_end:ix , j ])
 
-        return z_star
+        solution_quality = self.attacker.expected_utility(z_star, N=10000)
+        return z_star, solution_quality
 
                     
         

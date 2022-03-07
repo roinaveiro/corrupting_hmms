@@ -1,4 +1,6 @@
 import numpy as np
+import time
+
 from solvers.nn_RS.game import boolean_optim_state
 from solvers.nn_RS.nodes import boolean_optim_mcts_node
 from solvers.nn_RS.mcts import boolean_optim_mcts
@@ -77,23 +79,38 @@ class nn_RS():
     def evaluate(self, z):
         return self.attacker.expected_utility(z, N=1)
 
-    def iterate(self):
+    def iterate(self, simulation_seconds=None):
+
+        if simulation_seconds is None :
         
-        for i in range(self.RS_iters):
+            for i in range(self.RS_iters):
 
-            if self.verbose:
-                if i%50 == 0:
-                    print("Percentage completed:", 
-                    np.round(100*i/self.RS_iters, 2)  )
+                if self.verbose:
+                    if i%50 == 0:
+                        print("Percentage completed:", 
+                        np.round(100*i/self.RS_iters, 2)  )
 
-                    print("Current action: ")
-                    print(self.policy(eps=0.0))
+                        print("Current action: ")
+                        print(self.policy(eps=0.0))
 
-            action = self.policy(self.eps)
-            value  = self.evaluate(action)
-            self.update( value, action )
+                action = self.policy(self.eps)
+                value  = self.evaluate(action)
+                self.update( value, action )
 
-        return self.policy(eps=0.0, iters=10000)
+        else:
+
+            end_time = time.time() + simulation_seconds
+            while time.time() < end_time:
+
+                action = self.policy(self.eps)
+                value  = self.evaluate(action)
+                self.update( value, action )
+
+        
+        z_star = self.policy(eps=0.0, iters=10000)
+        solution_quality = self.attacker.expected_utility(z_star, N=10000)
+
+        return z_star, solution_quality
 
         
 
