@@ -36,7 +36,8 @@ class dec_attacker():
 
         # Mask. For each t has 1 in positions the attacker is interested
         # and -1 in the rest
-        self.seq_mask = -np.ones([self.T, self.n_components])
+        # self.seq_mask = -np.ones([self.T, self.n_components])
+        self.seq_mask = np.zeros([self.T, self.n_components])
         for i in range(self.seq_mask.shape[0]):
             self.seq_mask[i, self.seq[i]] = 1.
 

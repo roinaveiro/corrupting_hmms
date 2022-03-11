@@ -33,6 +33,9 @@ class nn_RS():
         self.Z_set = self.attacker.generate_attacks()
         self.mcts_iters = mcts_iters
 
+        self.z_best = 0.0 #Something better?
+        self.value_best = 0.0
+
         self.RS_iters = RS_iters
         self.eps = eps
 
@@ -77,7 +80,8 @@ class nn_RS():
             
         
     def evaluate(self, z):
-        return self.attacker.expected_utility(z, N=1)
+        # Increase N for less noisy estimates
+        return self.attacker.expected_utility(z, N=10)
 
     def iterate(self, simulation_seconds=None):
 
@@ -95,6 +99,10 @@ class nn_RS():
 
                 action = self.policy(self.eps)
                 value  = self.evaluate(action)
+
+                if value >= self.value_best:
+                    self.z_best = action
+
                 self.update( value, action )
 
         else:
@@ -104,13 +112,23 @@ class nn_RS():
 
                 action = self.policy(self.eps)
                 value  = self.evaluate(action)
+
+                if value >= self.value_best:
+                    self.z_best = action
+                    self.value_best = value
+
                 self.update( value, action )
 
         
         z_star = self.policy(eps=0.0, iters=10000)
         solution_quality = self.attacker.expected_utility(z_star, N=10000)
+        solution_quality_best = self.attacker.expected_utility(self.z_best, N=10000)
 
-        return z_star, solution_quality
+        if solution_quality >= solution_quality_best:
+            return z_star, solution_quality
+        else:
+            return self.z_best, solution_quality_best 
+
 
         
 
