@@ -30,7 +30,7 @@ class nn_RS():
         self.initial_conf = -1*np.ones(self.attacker.T)
 
 
-        self.Z_set = self.attacker.generate_attacks()
+        # self.Z_set = self.attacker.generate_attacks()
         self.mcts_iters = mcts_iters
 
         self.z_best = 0.0 #Something better?
@@ -55,8 +55,9 @@ class nn_RS():
         # Search best action
 
         if np.random.uniform() < eps:
-
-            return self.Z_set[ np.random.choice(self.Z_set.shape[0]) ]
+            
+            # return self.Z_set[ np.random.choice(self.Z_set.shape[0]) ]
+            return self.attacker.sample_attack()
     
         else:
 
@@ -74,6 +75,7 @@ class nn_RS():
 
             else:
                 best_action = search.iterate(simulations_number=iters)
+
 
             return self.ohe(best_action)  
 

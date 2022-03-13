@@ -16,9 +16,10 @@ class aps_gibbs():
         self.cooling_schedule = cooling_schedule
         self.verbose          = verbose
 
-        self.Z_set = self.attacker.generate_attacks()            
+        # self.Z_set = self.attacker.generate_attacks()   
+        #          
         self.z_samples = np.zeros( [len(self.cooling_schedule),
-                            self.Z_set[0].shape[0], self.Z_set[0].shape[1]] )
+                            self.attacker.T, self.attacker.n_obs] )
         
 
     def update_probs_metropolis(self, H, hmms_old, value_old, z):
@@ -71,7 +72,8 @@ class aps_gibbs():
         hmms = []
         value = 0
 
-        z_init = self.Z_set[ np.random.choice(self.Z_set.shape[0]) ]
+        # z_init = self.Z_set[ np.random.choice(self.Z_set.shape[0]) ]
+        z_init = self.attacker.sample_attack()
 
         for temp in range(self.cooling_schedule[0]):
 

@@ -10,7 +10,7 @@ class boolean_optim_mcts(object):
         """
         self.root = node
         self.best_state = 0 #Something better...
-        self.best_result = 0.
+        self.best_result = -100000.
 
     def iterate(self, simulations_number=None, total_simulation_seconds=None):
         """

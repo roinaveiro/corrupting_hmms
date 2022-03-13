@@ -16,7 +16,7 @@ class aps_gibbs():
         self.max_iter         = max_iter
         self.verbose          = verbose
 
-        self.Z_set = self.attacker.generate_attacks()          
+        # self.Z_set = self.attacker.generate_attacks()          
         self.z_samples = []
 
         
@@ -71,7 +71,8 @@ class aps_gibbs():
         hmms = []
         value = 0
 
-        z_init = self.Z_set[ np.random.choice(self.Z_set.shape[0]) ]
+        # z_init = self.Z_set[ np.random.choice(self.Z_set.shape[0]) ]
+        z_init = self.attacker.sample_attack()
         init_temp = self.cooling_sch(t=1)
 
         for temp in range( init_temp ):

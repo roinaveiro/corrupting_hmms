@@ -30,8 +30,9 @@ def generate_candidate(t, z_init, attacker, N):
 
 def simulated_annealing(attacker, n_iter, N=10, verbose=True):
 
-    Z_set = attacker.generate_attacks()
-    z_init = Z_set[ np.random.choice(Z_set.shape[0]) ]
+    # Z_set = attacker.generate_attacks()
+    # z_init = Z_set[ np.random.choice(Z_set.shape[0]) ]
+    z_init = attacker.sample_attack()
 
     for t in np.arange(n_iter):
 

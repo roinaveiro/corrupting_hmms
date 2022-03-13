@@ -111,6 +111,10 @@ class ss_attacker():
         
         diag_matrix =  np.diag(np.ones(self.n_obs))
         return np.array( list(product((diag_matrix), repeat = self.T)))
+
+    def sample_attack(self):
+        return np.diag(np.ones(self.n_obs))[np.random.choice(
+                                        np.arange(self.n_obs), self.T)]
     
     
 
