@@ -16,8 +16,11 @@ class aps_gibbs():
         self.max_iter         = max_iter
         self.verbose          = verbose
 
+        z_init = self.attacker.sample_attack()
+        self.z_samples = z_init[np.newaxis]
+
         # self.Z_set = self.attacker.generate_attacks()          
-        self.z_samples = []
+        
 
         
 
@@ -72,7 +75,7 @@ class aps_gibbs():
         value = 0
 
         # z_init = self.Z_set[ np.random.choice(self.Z_set.shape[0]) ]
-        z_init = self.attacker.sample_attack()
+        z_init = self.z_samples[-1] #self.attacker.sample_attack()
         init_temp = self.cooling_sch(t=1)
 
         for temp in range( init_temp ):
@@ -84,15 +87,22 @@ class aps_gibbs():
 
         value /= init_temp
 
+
         return hmms, value, z_init
 
     def update_all(self, i, temp, z_init, hmms, value):
 
-        # Update z at random
-        idx = np.random.choice(self.attacker.T)
-        z_init = self.update_z(hmms, z_init, idx)
+        # Update every z
+        for idx in range(self.attacker.T):
+            z_init = self.update_z(hmms, z_init, idx)
 
-        self.z_samples.append(z_init)
+        self.z_samples = np.append(self.z_samples, 
+                        z_init[np.newaxis], axis=0)
+
+        # Update z at random
+        # idx = np.random.choice(self.attacker.T)
+        # z_init = self.update_z(hmms, z_init, idx)
+        # self.z_samples.append(z_init)
 
         # Update value with new z
         value = 0
@@ -142,14 +152,13 @@ class aps_gibbs():
             while time.time() < end_time:
 
                 current_temp = self.cooling_sch(i)
-                print( len(hmms) )
                 z_init, hmms, value = self.update_all(i, current_temp, z_init, hmms, value)
                 i+=1
       
             z_star, quality = self.extract_solution()
             return z_star, quality
 
-    def cooling_sch(self, t, l=3):
+    def cooling_sch(self, t, l=5):
 
         temp = np.int( np.exp(l*t/self.attacker.T) )
         return temp
@@ -161,7 +170,6 @@ class aps_gibbs():
         return vals[index]
 
     def extract_solution(self):
-
         self.z_samples = np.array(self.z_samples)
 
         z_star = np.zeros_like(self.z_samples[0])
@@ -172,6 +180,8 @@ class aps_gibbs():
 
         solution_quality = self.attacker.expected_utility(z_star, N=10000)
         return z_star, solution_quality
+
+
 
                     
         
