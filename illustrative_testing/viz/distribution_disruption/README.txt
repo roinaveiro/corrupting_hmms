@@ -1,1 +1,1 @@
-Viz distribution disruption dir.
+Distribution disruption viz dir.
