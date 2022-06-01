@@ -19,17 +19,17 @@ problem_dict = {'attacker': 'dec',
 unc_dict = {'rho': np.array([0.75,0.75,0.75,0.75,0.75,0.75]),
                  'k': 100 ,
                    'N1': 10000, 
-                'N2': 100}
+                'N2': 1000}
 
 params_dict = {'ratio': {'init_rt': 0.25,
-                        'fn_rt':  360,
+                        'fn_rt':  600,
                        'rt_st':  1},
               'contour': {'start_w1': 0,
                           'stop_w1': 360,
-                          'n_values_w1': 1800,
+                          'n_values_w1': 5,
                            'start_w2': 0,
                             'stop_w2':30,
-                              'n_values_w2':150},
+                              'n_values_w2':5},
                 'box': True}
 
 X_obs = np.array([ [4], [3], [5], [3], [4]])
