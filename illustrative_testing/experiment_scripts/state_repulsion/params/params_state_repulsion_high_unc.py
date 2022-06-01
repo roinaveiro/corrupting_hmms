@@ -24,7 +24,7 @@ unc_dict = {'rho': np.array([0.75, 0.75, 0.75, 0.75, 0.75, 0.75]),
                 'N2': 1000}
 
 params_dict = {'ratio': {'init_rt': 0.1,
-                        'fn_rt':  105.5,
+                        'fn_rt':  115.5,
                        'rt_st':  0.25},
               'contour': {'start_w1': 0.1,
                           'stop_w1': 60,
