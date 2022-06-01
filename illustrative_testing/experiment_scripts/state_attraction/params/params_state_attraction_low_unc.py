@@ -24,14 +24,14 @@ unc_dict = {'rho': np.array([0.95,0.95, 0.95, 0.95, 0.95, 0.95]),
                 'N2': 5000}
 
 params_dict = {'ratio': {'init_rt': 0.1,
-                        'fn_rt':  105.5,
+                        'fn_rt':  115.5,
                        'rt_st':  0.3},
               'contour': {'start_w1': 0.1,
                           'stop_w1': 60,
-                          'n_values_w1': 60,
+                          'n_values_w1': 4,
                            'start_w2': 0.1,
                             'stop_w2':60,
-                              'n_values_w2':60},
+                              'n_values_w2':4},
                 'box': True}
 
 X_obs = np.array([ [4], [3], [5], [3], [4]])
