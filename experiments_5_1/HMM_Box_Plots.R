@@ -1,4 +1,4 @@
-setwd("~/Research/HMM Poisoning")
+#setwd("C:/Users/Chema Camacho/Desktop/ICMAT/HMM/experiments/experiment_17/v5_19_05_2022_right/")
 #install.packages('latex2exp')
 
 library(tidyverse)
@@ -109,7 +109,7 @@ pdf('pd_low_unc_box.pdf')
 gf_boxplot(res~as.factor(diff_n_comp), data =df ) %>%
   gf_theme(theme_bw())  %>%
   gf_labs( x = TeX("No. Poisoned Observations"),
-           y = TeX("Jaccard Index" )) + 
+           y = TeX("Normalized Hamming distance" )) + 
   scale_y_continuous(breaks=seq(0,1,0.1), limits = c(0,1)) +
   theme(panel.border = element_blank(), panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"), text = element_text(size = 22))        
@@ -122,7 +122,7 @@ pdf('pd_high_unc_box.pdf')
 gf_boxplot(res~as.factor(diff_n_comp), data =df ) %>%
   gf_theme(theme_bw())  %>%
   gf_labs( x = TeX("No. Poisoned Observations"),
-           y = TeX("Jaccard Index" )) + 
+           y = TeX("Normalized Hamming distance" )) + 
   scale_y_continuous(breaks=seq(0,1,0.1), limits = c(0,1)) +
   theme(panel.border = element_blank(), panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"), text = element_text(size = 22))        

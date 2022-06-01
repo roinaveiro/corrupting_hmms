@@ -1,4 +1,4 @@
-setwd("~/Research/HMM Poisoning")
+#setwd("~/Research/HMM Poisoning")
 #install.packages('latex2exp')
 
 library(tidyverse)
@@ -46,8 +46,9 @@ dev.off()
 ######################################
 #State-Repulsion Low Uncertainty
 df = read_csv('rep_low_unc_ratio.csv')
+df = df[df$ratio <= 105,]
 df1 = read_csv('rep_high_unc_ratio.csv')
-
+df1 = df1[df1$ratio <= 105,]
 pdf('rep_lowandhigh_unc_ratio.pdf')
 fig2 = ggplot(data = df, aes(x=ratio)) +
   geom_line(aes(y=df$res, colour = 'Low Uncertainty'), linetype = 'solid')+
@@ -119,8 +120,8 @@ pdf('pd_lowandhigh_unc_ratio.pdf')
 fig4 =ggplot(data = df, aes(x=ratio)) +
   geom_line(aes(y=df$res, colour = 'Low Uncertainty'), linetype = 'solid') +
   geom_ribbon(aes(ymin =df$res_std_minus , ymax = df$res_std_plus), fill = 'grey40', alpha = 0.5) + 
-  scale_y_continuous(name = TeX("Jaccard Index" ), breaks=seq(0,1,0.1), limits = c(0,1)) +
-  scale_x_continuous(name = TeX("$w_1 /w_2$"), breaks=seq(0,350,50), limits = c(0,350)) +
+  scale_y_continuous(name = TeX("Normalized Hamming distance" ), breaks=seq(0,1,0.1), limits = c(0,1)) +
+  scale_x_continuous(name = TeX("$w_1 /w_2$"), breaks=seq(0,400,50), limits = c(0,400)) +
   theme(panel.border = element_blank(), panel.background =element_blank(),panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"), text = element_text(size = 22))
 
