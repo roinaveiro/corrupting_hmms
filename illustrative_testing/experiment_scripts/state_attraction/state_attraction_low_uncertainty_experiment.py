@@ -9,7 +9,7 @@ hmm.transmat_     = hmm_params['transition']
 hmm.startprob_    = hmm_params['priors']
 
 
-res_d = all_experiments_loop(X_obs, hmm, problem_dict, unc_dict, params_dict)
+res_d = all_experiments_loop(X_obs, hmm, problem_dict, unc_dict, params_dict, num_jobs_=60)
 
 
 ratio_df = ratio_results_to_df(res_d)
