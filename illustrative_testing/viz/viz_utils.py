@@ -19,7 +19,7 @@ def ratio_df_to_res_dict(df):
 def ratio_plot(
     d,
     title_str,
-    problem_params={"metric": "Jaccard index", "yticks": None, "xticks": None},
+    problem_params={"metric": "Hamming distance", "yticks": None, "xticks": None},
     size_params={
         "label_size": 13.5,
         "tick_size": 12,
