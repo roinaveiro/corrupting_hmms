@@ -10,7 +10,7 @@ from collections import Counter
 import time 
 from joblib import Parallel, delayed
 from scipy.special import rel_entr
-from scipy.spatial.distance import jaccard
+from scipy.spatial.distance import hamming
 
 
 def Z_2_vec(Z_set):
@@ -96,18 +96,17 @@ def exp_kl_div(hmm_D, attacker, z_star, N_):
     return [np.mean(kl_div_arr), np.std(kl_div_arr)/np.sqrt(N_)]
 
 
-def exp_jacc_d(hmm_D, attacker, z_star, N_):
+def exp_hamm_d(hmm_D, attacker, z_star, N_):
     
-    jacc_d_arr = np.zeros(N_)
+    hamm_d_arr = np.zeros(N_)
     for n in range(N_):
         hmm_sample = attacker.sample_hmm()
         y_vec = attacker.attack_X(rho_matrix = hmm_sample.rho, z_matrix = z_star)
-        dec_cl_data = hmm_D.decode((attacker.X).astype(int))[1]
         dec_tn_data = hmm_D.decode(y_vec.astype(int))[1]
-        # jaccard distance
-        jacc_d = jaccard(dec_cl_data,dec_tn_data)  
-        jacc_d_arr[n] = jacc_d
-    return [np.mean(jacc_d_arr), np.std(jacc_d_arr)/np.sqrt(N_)]
+        # hamming distance
+        hamm_d = hamming(attacker.seq, dec_tn_data)  
+        hamm_d_arr[n] = hamm_d
+    return [np.mean(hamm_d_arr), np.std(hamm_d_arr)/np.sqrt(N_)]
 
 
 def exp_impact(hmm_D, attacker, z_star, N_):
@@ -120,7 +119,7 @@ def exp_impact(hmm_D, attacker, z_star, N_):
         res_list = exp_kl_div(hmm_D, attacker, z_star, N_)
     
     elif type(attacker) == dec_attacker:
-        res_list = exp_jacc_d(hmm_D, attacker, z_star, N_)
+        res_list = exp_hamm_d(hmm_D, attacker, z_star, N_)
 
     return res_list
 
