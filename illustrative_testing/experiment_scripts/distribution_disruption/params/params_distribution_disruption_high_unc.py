@@ -22,14 +22,14 @@ unc_dict = {'rho': np.array([0.75,0.75,0.75,0.75,0.75,0.75]),
                 'N2': 5000}
 
 params_dict = {'ratio': {'init_rt': 0.1,
-                        'fn_rt':  60,
+                        'fn_rt':  110,
                        'rt_st':  0.1},
               'contour': {'start_w1': 0.1,
-                          'stop_w1': 60,
-                          'n_values_w1': 60,
+                          'stop_w1': 3,
+                          'n_values_w1': 3,
                            'start_w2': 0.1,
-                            'stop_w2':60,
-                              'n_values_w2':60},
+                            'stop_w2':3,
+                              'n_values_w2':3},
                 'box': True}
 
 
