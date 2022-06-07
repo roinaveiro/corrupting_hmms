@@ -24,6 +24,7 @@ class nn_RS():
 
         self.model  = FeedForwardNN(self.attacker.T*self.attacker.n_obs, 1)
         self.optim  = Adam(self.model.parameters(), lr=lr)
+        # weight_decay=1e-5
         self.loss   = nn.MSELoss()
 
         self.possible_values = np.arange(self.attacker.n_obs)
