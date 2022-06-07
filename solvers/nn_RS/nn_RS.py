@@ -5,6 +5,8 @@ from solvers.nn_RS.game import boolean_optim_state
 from solvers.nn_RS.nodes import boolean_optim_mcts_node
 from solvers.nn_RS.mcts import boolean_optim_mcts
 
+from solvers.nn_RS.SA import simulated_annealing
+
 import torch
 from torch import nn
 import torch.nn.functional as F
@@ -17,14 +19,17 @@ class nn_RS():
     '''
 
 
-    def __init__(self, attacker, RS_iters=1000, mcts_iters=100, eps=0.1, lr=0.05, verbose=True):
+    def __init__(self, attacker, flag, RS_iters=1000, mcts_iters=100, sa_iters=100, eps=0.1, lr=0.05, verbose=True):
 
 
         self.attacker = attacker
 
         self.model  = FeedForwardNN(self.attacker.T*self.attacker.n_obs, 1)
         self.optim  = Adam(self.model.parameters(), lr=lr)
-        # weight_decay=1e-5
+        # lr is adjustable
+        # We could add regularization
+        # self.optim  = Adam(self.model.parameters(), lr=lr, weight_decay=1e-5)
+
         self.loss   = nn.MSELoss()
 
         self.possible_values = np.arange(self.attacker.n_obs)
@@ -33,6 +38,7 @@ class nn_RS():
 
         # self.Z_set = self.attacker.generate_attacks()
         self.mcts_iters = mcts_iters
+        self.sa_iters   = sa_iters
 
         self.z_best = 0.0 #Something better?
         self.value_best = 0.0
@@ -41,6 +47,7 @@ class nn_RS():
         self.eps = eps
 
         self.verbose = verbose
+        self.flag = flag
 
 
     def update(self, output, action):
@@ -54,6 +61,7 @@ class nn_RS():
     def policy(self, eps=0.1, iters=None):
 
         # Search best action
+        # eps is adjustable
 
         if np.random.uniform() < eps:
             
@@ -62,28 +70,51 @@ class nn_RS():
     
         else:
 
-            F_eval = (lambda x: 
-                      self.model.forward(self.ohe(x).flatten()).detach().numpy().item())
+            if self.flag == 'MCTS':
 
-            init_state = boolean_optim_state(self.initial_conf, 
-            self.possible_values, F_eval)
+                F_eval = (lambda x: 
+                        self.model.forward(self.ohe(x).flatten()).detach().numpy().item())
 
-            root_node  = boolean_optim_mcts_node(init_state)
-            search     = boolean_optim_mcts(root_node)
+                init_state = boolean_optim_state(self.initial_conf, 
+                self.possible_values, F_eval)
 
-            if iters is None:
-                best_action = search.iterate(simulations_number=self.mcts_iters)
+                root_node  = boolean_optim_mcts_node(init_state)
+                search     = boolean_optim_mcts(root_node)
 
-            else:
-                best_action = search.iterate(simulations_number=iters)
+                if iters is None:
+                    best_action = search.iterate(simulations_number=self.mcts_iters)
+                    # self.mcts_iters is adjustable
+
+                else:
+                    best_action = search.iterate(simulations_number=iters)
 
 
-            return self.ohe(best_action)  
+                return self.ohe(best_action)  
+
+            elif self.flag == 'SA':
+
+                F_eval = (lambda x: 
+                        self.model.forward(x.flatten()).detach().numpy().item())
+
+                ##
+                if iters is None:
+                    sa = simulated_annealing(self.attacker, F_eval, self.sa_iters)
+                    best_action = sa.iterate()
+                   
+                else:
+                    sa = simulated_annealing(self.attacker, F_eval, iters)
+                    best_action = sa.iterate()
+
+
+                
+
+                return best_action
 
             
         
     def evaluate(self, z):
         # Increase N for less noisy estimates
+        # Adjustable
         return self.attacker.expected_utility(z, N=10)
 
     def iterate(self, simulation_seconds=None):
@@ -122,8 +153,14 @@ class nn_RS():
 
                 self.update( value, action )
 
-        
-        z_star = self.policy(eps=0.0, iters=10000)
+
+        if self.flag == 'MCTS':
+            z_star = self.policy(eps=0.0, iters=10000)
+
+        elif self.flag == 'SA':
+            z_star = self.policy(eps=0.0, iters=500)
+
+
         solution_quality = self.attacker.expected_utility(z_star, N=10000)
         solution_quality_best = self.attacker.expected_utility(self.z_best, N=10000)
 
