@@ -55,7 +55,7 @@ class dec_attacker():
         # Compute first term of utility
         V, _ = hmm.nu(Y)
         V = softmax(V)
-        p1 = np.sum(V * self.seq_mask)
+        p1 = np.sum(V * self.seq_mask / np.expand_dims( np.sum(V, axis=1), axis=1 ))
 
         # Compute second term of utility
         vec_diff = (np.argmax(z ,axis=1) - self.X.reshape(-1))
