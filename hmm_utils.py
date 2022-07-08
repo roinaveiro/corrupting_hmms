@@ -49,7 +49,7 @@ class HMM(hmm.MultinomialHMM):
         Ptr = np.zeros([len(X), self.n_components]) 
 
         lemissionprob_ = np.log(self.emissionprob_)
-        ltransmat_     = np.log(self.transmat_)
+        ltransmat_     = np.log(self.transmat_.T)
         lstartprob_   = np.log(self.startprob_)
 
         # Init
@@ -58,8 +58,10 @@ class HMM(hmm.MultinomialHMM):
         # Forward
         for t in np.arange(1 , len(X) ):
 
+
             V[t]   = ( lemissionprob_[:, X[t].item()] + 
                 np.max( ltransmat_ + V[t-1], axis=1 ) )
+
 
             Ptr[t] =  np.argmax( ltransmat_ + V[t-1], axis=1 )
 
