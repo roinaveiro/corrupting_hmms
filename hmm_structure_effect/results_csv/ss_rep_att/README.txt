@@ -1,1 +1,0 @@
-State repulsion attacker problem.
