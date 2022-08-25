@@ -49,6 +49,8 @@ class nn_RS():
         self.verbose = verbose
         self.flag = flag
 
+        self.solution_quality_best = 0.0
+
 
     def update(self, output, action):
 
@@ -162,12 +164,15 @@ class nn_RS():
 
 
         solution_quality = self.attacker.expected_utility(z_star, N=10000)
-        solution_quality_best = self.attacker.expected_utility(self.z_best, N=10000)
+        # print(solution_quality)
 
-        if solution_quality >= solution_quality_best:
-            return z_star, solution_quality
-        else:
-            return self.z_best, solution_quality_best 
+
+        if solution_quality >= self.solution_quality_best:
+
+            self.z_best = z_star
+            self.solution_quality_best = solution_quality
+
+        return self.z_best, self.solution_quality_best 
 
 
         
