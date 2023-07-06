@@ -1,4 +1,4 @@
-# Code for Poisoning HMMs paper
+# Code for Corrupting HMMs paper
 
 
 Install package using
