@@ -125,19 +125,23 @@ class nn_RS():
         
             for i in range(self.RS_iters):
 
+                action = self.policy(self.eps)
+                value  = self.evaluate(action)
+
                 if self.verbose:
                     if i%50 == 0:
                         print("Percentage completed:", 
                         np.round(100*i/self.RS_iters, 2)  )
 
-                        print("Current action: ")
-                        print(self.policy(eps=0.0))
 
-                action = self.policy(self.eps)
-                value  = self.evaluate(action)
+                        print("Best value: ")
+                        print(self.value_best)
+
+                
 
                 if value >= self.value_best:
                     self.z_best = action
+                    self.value_best = value
 
                 self.update( value, action )
 

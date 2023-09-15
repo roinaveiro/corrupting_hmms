@@ -58,7 +58,8 @@ class aps_gibbs():
                 energies[i] += np.log( self.attacker.utility(z_new, hmm_sample) )
                 
         p = softmax(energies)
-        #print(p)
+        # print(p)
+        # print(energies)
 
         candidate_idx = np.random.choice( 
             np.arange(len(Z_candidates) ), p=p )
@@ -90,6 +91,7 @@ class aps_gibbs():
 
         # Update z
         for idx in range(self.attacker.T):
+            print(idx)
             z_init = self.update_z(hmms, z_init, idx)
             self.z_samples[i, idx] = z_init[idx]
 
@@ -117,7 +119,7 @@ class aps_gibbs():
             
                 if self.verbose:
                     
-                    if i%10 == 0:
+                    if i%1 == 0:
                         print("Percentage completed:", 
                         np.round( 100*i/len(self.cooling_schedule), 2) )
                         print("Current state", z_init)
@@ -159,7 +161,7 @@ class aps_gibbs():
     def extract_solution(self, ix):
 
         z_star = np.zeros_like(self.z_samples[0])
-        burnin_end = np.int(self.burnin * ix)
+        burnin_end = np.int64(self.burnin * ix)
         
         for j in range(z_star.shape[0]):
             z_star[j] = self.get_mode(self.z_samples[  burnin_end:ix , j ])

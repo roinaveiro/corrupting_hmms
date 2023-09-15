@@ -160,7 +160,7 @@ class aps_gibbs():
 
     def cooling_sch(self, t, l=5):
 
-        temp = np.int( np.exp(l*t/self.attacker.T) )
+        temp = np.int64( np.exp(l*t/self.attacker.T) )
         return temp
 
     
@@ -173,7 +173,7 @@ class aps_gibbs():
         self.z_samples = np.array(self.z_samples)
 
         z_star = np.zeros_like(self.z_samples[0])
-        burnin_end = np.int(self.burnin * len(self.z_samples))
+        burnin_end = np.int64(self.burnin * len(self.z_samples))
         
         for j in range(z_star.shape[0]):
             z_star[j] = self.get_mode(self.z_samples[  burnin_end: , j ])
