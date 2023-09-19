@@ -1,0 +1,9 @@
+[nltk_data] Downloading package stopwords to
+[nltk_data]     /home/roi.naveiro/nltk_data...
+[nltk_data]   Package stopwords is already up-to-date!
+/home/roi.naveiro/corrupting_hmms/ner_experiment.py:48: FutureWarning: DataFrame.fillna with 'method' is deprecated and will raise in a future version. Use obj.ffill() or obj.bfill() instead.
+  data = data.fillna(method="ffill")
+  0%|          | 0/329086 [00:00<?, ?it/s] 64%|██████▍   | 210112/329086 [00:00<00:00, 2100986.76it/s]100%|██████████| 329086/329086 [00:00<00:00, 2152493.92it/s]
+  0%|          | 0/29 [00:00<?, ?it/s]100%|██████████| 29/29 [00:00<00:00, 10025.95it/s]
+/home/roi.naveiro/anaconda3/envs/corrupting_hmms/lib/python3.11/site-packages/torch/nn/modules/loss.py:536: UserWarning: Using a target size (torch.Size([1])) that is different to the input size (torch.Size([])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size.
+  return F.mse_loss(input, target, reduction=self.reduction)

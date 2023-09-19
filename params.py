@@ -11,9 +11,11 @@ zeta = 3
 
 k = 1000
 
+
 ### FOR NER EXP ###
-data_path = "/Users/roinaveiro/OneDrive - CUNEF/CUNEF/research/corrupting_hmms/data/ner.csv"
-results_path = "/Users/roinaveiro/OneDrive - CUNEF/CUNEF/research/corrupting_hmms/results/"
+root = "/home/roi.naveiro/corrupting_hmms"
+data_path = f'{root}/data/ner.csv'
+results_path = f'{root}/results/'
 
 attack1 = {
     0  : 0,

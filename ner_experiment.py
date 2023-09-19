@@ -189,6 +189,9 @@ def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, attack):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
+    if 'ner' in globals():
+        del ner
+
     ner = NER()
 
     k_value = 10e6
@@ -216,11 +219,11 @@ def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, attack):
 
 if __name__ == "__main__":
 
-    w1 = 1.0
-    w2 = 5.0
-    seconds = 500
+    w1 = 2.0
+    w2 = 1.0
+    seconds = 6000
 
-    sentence_num = 34043
+    sentence_num = 41785
     sentence = f'Sentence: {sentence_num}'
     # sentence = "Sentence: 41785"
     # sentence = "Sentence: 44516"
@@ -228,7 +231,8 @@ if __name__ == "__main__":
     dirname = f'{results_path}w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}/'
 
     for i in range(10):
-        fname = f'{dirname}exp{n_exp}_w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}_seconds.pkl'
+        fname = f'{dirname}exp{i}_w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}_seconds.pkl'
         make_exp(i, dirname, fname, w1, w2, seconds, sentence, attack1)
+        print(f'Finished Experiment {i}')
 
     
