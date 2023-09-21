@@ -169,17 +169,16 @@ class NER():
         # KL divergence
         kl = np.sum( rel_entr(p_clean, p_att) ) 
     
-    
 
         results = {'n_exp': n_exp, 'w1' : w1, 'w2' : w2, 'k_value' : k_value, 'rho' : rho,
                    'n_obs': self.n_obs, 'n_hidden': self.n_hidden, 'T': self.T,
                    'original_phrase':self.seq2word(X[0]),
                    'attacked_phrase':self.seq2word(self.attack_obs),
-                   'hamming_d2target': np.mean(self.att_seq == self.target_seq),
+                   'kl-d': kl,
+                   'p_clean': p_clean,
+                   'p_att': p_att,
                    'd2original': np.mean( self.attack_obs == X[0] ),
-                   'exp_util' : self.att.expected_utility(self.sol),
-                   'original_acc': np.mean(self.y_pred == self.y), 
-                   'attacked_acc': np.mean(self.att_seq == self.y)
+                   'exp_util' : self.att.expected_utility(self.sol)
                    }
 
         with open(f'{fname}', 'wb') as fp:
@@ -187,7 +186,7 @@ class NER():
             print('dictionary saved successfully to file')
 
 
-def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, attack):
+def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, tt):
 
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -214,10 +213,8 @@ def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, attack):
         y[i] = ner.tag2id[sentence.POS.iloc[i]]
     ###
 
-    ner.get_info(X, y, fname, n_exp, attack, w1, w2,
+    ner.get_info(X, y, fname, n_exp, tt, w1, w2,
         k_value, rho, seconds)
-
-
 
 
 if __name__ == "__main__":
@@ -225,6 +222,7 @@ if __name__ == "__main__":
     w1 = 2.0
     w2 = 1.0
     seconds = 6000
+    tt = 5
 
     sentence_num = 41785
     sentence = f'Sentence: {sentence_num}'
@@ -235,7 +233,7 @@ if __name__ == "__main__":
 
     for i in range(10):
         fname = f'{dirname}exp{i}_w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}_seconds.pkl'
-        make_exp(i, dirname, fname, w1, w2, seconds, sentence, attack1)
+        make_exp(i, dirname, fname, w1, w2, seconds, sentence, tt)
         print(f'Finished Experiment {i}')
 
     
