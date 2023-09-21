@@ -20,8 +20,11 @@ nltk.download('stopwords')
 
 from typing import List
 
+import warnings
+warnings.filterwarnings("ignore")
+
 from solvers.nn_RS.nn_RS import nn_RS
-from attackers.smoothing_distribution_attacker.py import sd_attacker
+from attackers.smoothing_distribution_attacker import sd_attacker
 
 def pre_processing(text_column):
     # lowercase all text in the column
@@ -130,7 +133,7 @@ class NER():
         return l
 
 
-    def init_attacker(self, X, y, tt=5,, w1=1.0, w2=5.0, k_value=10e6, rho=1.0):
+    def init_attacker(self, X, y, tt=5, w1=1.0, w2=5.0, k_value=10e6, rho=1.0):
 
         self.rho_probs = rho*np.ones(self.n_obs)
         self.k_value = k_value
