@@ -41,7 +41,7 @@ class nn_RS():
         self.sa_iters   = sa_iters
 
         self.z_best = 0.0 #Something better?
-        self.value_best = 0.0
+        self.value_best = -1000000
 
         self.RS_iters = RS_iters
         self.eps = eps
@@ -49,7 +49,7 @@ class nn_RS():
         self.verbose = verbose
         self.flag = flag
 
-        self.solution_quality_best = 0.0
+        self.solution_quality_best = -1000000
 
 
     def update(self, output, action):
