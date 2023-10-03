@@ -43,8 +43,8 @@ class dec_attacker():
 
 
         # Scale for getting positive utilities
-        # self.scale = self.w1*self.T + self.w2*self.T + 1.0
-        self.scale = 0.0
+        self.scale = self.w1*self.T + self.w2*self.T + 1.0
+        # self.scale = 0.0
 
 
 

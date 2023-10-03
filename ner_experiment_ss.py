@@ -141,10 +141,11 @@ class NER():
         self.w2 = w2
         self.X = X
         self.y = y
-        self.T = self.X.shape[0]
+        self.T = self.X.shape[1]
         self.tt = tt
         self.state = state
         self.c = c
+        print("State is", self.state)
 
         self.att = ss_attacker(self.hmm_n.startprob_ , self.hmm_n.transmat_,
          self.hmm_n.emissionprob_, self.rho_probs,
@@ -185,6 +186,8 @@ class NER():
                    'exp_util' : self.att.expected_utility(self.sol)
                    }
 
+        print(results)
+
         with open(f'{fname}', 'wb') as fp:
             pickle.dump(results, fp)
             print('dictionary saved successfully to file')
@@ -200,7 +203,7 @@ def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, tt, state, c):
 
     ner = NER()
 
-    k_value = 10e6
+    k_value = 1e7
     rho = 1.0
 
     ###
@@ -217,15 +220,15 @@ def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, tt, state, c):
         y[i] = ner.tag2id[sentence.POS.iloc[i]]
     ###
 
-    ner.get_info(X, y, fname, n_exp, tt, w1, w2,
+    ner.get_info(X, y, fname, n_exp, tt, state, c, w1, w2,
         k_value, rho, seconds)
 
 
 if __name__ == "__main__":
 
-    w1 = 2.0
-    w2 = 1.0
-    seconds = 6000
+    w1 = 1.0
+    w2 = 5.0
+    seconds = 9000
     tt = 5
     state=14
     c=1
@@ -234,10 +237,10 @@ if __name__ == "__main__":
     sentence = f'Sentence: {sentence_num}'
     # sentence = "Sentence: 41785"
     # sentence = "Sentence: 44516"
-    n_exp = 1
-    dirname = f'{results_path}ss_attacker/w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}/'
+    n_exp = 10
+    dirname = f'{results_path}ner_ss_attraction/w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}/'
 
-    for i in range(10):
+    for i in range(n_exp):
         fname = f'{dirname}exp{i}_w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}_seconds.pkl'
         make_exp(i, dirname, fname, w1, w2, seconds, sentence, tt, state, c)
         print(f'Finished Experiment {i}')

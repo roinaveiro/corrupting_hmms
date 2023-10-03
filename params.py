@@ -13,9 +13,10 @@ k = 1000
 
 
 ### FOR NER EXP ###
+root_lovelace = "/LUSTRE/users/rnaveiro/corrupting_hmms"
 root = "/home/roi.naveiro/corrupting_hmms"
-data_path = f'{root}/data/ner.csv'
-results_path = f'{root}/results/'
+data_path = f'{root_lovelace}/data/ner.csv'
+results_path = f'{root_lovelace}/results/'
 
 attack1 = {
     0  : 0,

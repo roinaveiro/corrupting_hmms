@@ -184,6 +184,8 @@ class NER():
                    'exp_util' : self.att.expected_utility(self.sol)
                    }
 
+        print(results)
+
         with open(f'{fname}', 'wb') as fp:
             pickle.dump(results, fp)
             print('dictionary saved successfully to file')
@@ -224,17 +226,17 @@ if __name__ == "__main__":
 
     w1 = 2.0
     w2 = 1.0
-    seconds = 6000
+    seconds = 9000
     tt = 5
 
     sentence_num = 41785
     sentence = f'Sentence: {sentence_num}'
     # sentence = "Sentence: 41785"
     # sentence = "Sentence: 44516"
-    n_exp = 1
-    dirname = f'{results_path}w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}/'
+    n_exp = 10
+    dirname = f'{results_path}ner_sd/w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}/'
 
-    for i in range(10):
+    for i in range(10, 20):
         fname = f'{dirname}exp{i}_w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}_seconds.pkl'
         make_exp(i, dirname, fname, w1, w2, seconds, sentence, tt)
         print(f'Finished Experiment {i}')
