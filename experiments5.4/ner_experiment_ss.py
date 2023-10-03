@@ -24,7 +24,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from solvers.nn_RS.nn_RS import nn_RS
-from attackers.smoothing_distribution_attacker import sd_attacker
+from attackers.smoothing_state_attacker import ss_attacker
 
 def pre_processing(text_column):
     # lowercase all text in the column
@@ -133,7 +133,7 @@ class NER():
         return l
 
 
-    def init_attacker(self, X, y, tt=5, w1=1.0, w2=5.0, k_value=10e6, rho=1.0):
+    def init_attacker(self, X, y, tt=5, state=14, c=1, w1=1.0, w2=5.0, k_value=10e6, rho=1.0):
 
         self.rho_probs = rho*np.ones(self.n_obs)
         self.k_value = k_value
@@ -141,23 +141,26 @@ class NER():
         self.w2 = w2
         self.X = X
         self.y = y
-        self.T = self.X.shape[0]
+        self.T = self.X.shape[1]
         self.tt = tt
+        self.state = state
+        self.c = c
+        print("State is", self.state)
 
-        self.att = sd_attacker(self.hmm_n.startprob_ , self.hmm_n.transmat_,
+        self.att = ss_attacker(self.hmm_n.startprob_ , self.hmm_n.transmat_,
          self.hmm_n.emissionprob_, self.rho_probs,
-         self.X.T, self.w1, self.w2, self.tt, self.k_value)
+         self.X.T, self.w1, self.w2, self.tt, self.state, self.c, self.k_value)
 
     def find_attack(self, seconds=10):
         find_sol = nn_RS(self.att, "SA", RS_iters=5000, mcts_iters=10, sa_iters=10, 
         eps=0.05, lr=0.005, verbose=True)
         self.sol, _ = find_sol.iterate(simulation_seconds=seconds)
 
-    def get_info(self, X, y, fname, n_exp, tt, w1=1.0, w2=5.0,
+    def get_info(self, X, y, fname, n_exp, tt, state, c, w1=1.0, w2=5.0,
      k_value=10e6, rho=1.0, seconds=10):
 
         
-        self.init_attacker(X, y, tt, w1, w2, k_value, rho)
+        self.init_attacker(X, y, tt, state, c, w1, w2, k_value, rho)
 
         self.find_attack(seconds)
         self.attack_obs = self.att.attack_X(np.ones_like(self.sol), self.sol)
@@ -165,19 +168,18 @@ class NER():
 
         # Original smoothing dist at time self.t
         p_clean = self.hmm_n.smoothing(X.reshape(1,-1).astype(int), tt)
+        p_clean = p_clean[state]
 
         # Attacked smoothing dist at time self.t
         p_att = self.hmm_n.smoothing(self.attack_obs.reshape(1,-1), tt)
+        p_att = p_att[state]
 
-        # KL divergence
-        kl = np.sum( rel_entr(p_clean, p_att) ) 
     
 
         results = {'n_exp': n_exp, 'w1' : w1, 'w2' : w2, 'k_value' : k_value, 'rho' : rho,
                    'n_obs': self.n_obs, 'n_hidden': self.n_hidden, 'T': self.T,
                    'original_phrase':self.seq2word(X[0]),
                    'attacked_phrase':self.seq2word(self.attack_obs),
-                   'kl-d': kl,
                    'p_clean': p_clean,
                    'p_att': p_att,
                    'd2original': np.mean( self.attack_obs == X[0] ),
@@ -191,7 +193,7 @@ class NER():
             print('dictionary saved successfully to file')
 
 
-def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, tt):
+def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, tt, state, c, k_value, rho):
 
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -201,8 +203,6 @@ def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, tt):
 
     ner = NER()
 
-    k_value = 10e6
-    rho = 1.0
 
     ###
     sentence = ner.data_reduced[ner.data_reduced.sentence == sentence]
@@ -218,27 +218,35 @@ def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, tt):
         y[i] = ner.tag2id[sentence.POS.iloc[i]]
     ###
 
-    ner.get_info(X, y, fname, n_exp, tt, w1, w2,
+    ner.get_info(X, y, fname, n_exp, tt, state, c, w1, w2,
         k_value, rho, seconds)
 
 
 if __name__ == "__main__":
 
-    w1 = 2.0
-    w2 = 1.0
+    w1 = 1.0
+    w2 = 5.0
     seconds = 9000
     tt = 5
+    state=14
+    c=1
+    n_exp = 10
+    k_value = 1e7
+    rho = 1.0
 
     sentence_num = 41785
     sentence = f'Sentence: {sentence_num}'
     # sentence = "Sentence: 41785"
     # sentence = "Sentence: 44516"
-    n_exp = 10
-    dirname = f'{results_path}ner_sd/w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}/'
 
-    for i in range(10, 20):
+    if c==1:
+        dirname = f'{results_path}ner_ss_attraction/w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}/'
+    else:
+        dirname = f'{results_path}ner_ss_repulsion/w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}/'
+
+    for i in range(n_exp):
         fname = f'{dirname}exp{i}_w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}_seconds.pkl'
-        make_exp(i, dirname, fname, w1, w2, seconds, sentence, tt)
+        make_exp(i, dirname, fname, w1, w2, seconds, sentence, tt, state, c, k_value, rho)
         print(f'Finished Experiment {i}')
 
     

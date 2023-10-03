@@ -184,7 +184,8 @@ class NER():
             print('dictionary saved successfully to file')
 
 
-def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, attack):
+def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, attack,
+             k_value, rho):
 
     if not os.path.exists(dirname):
         os.makedirs(dirname)
@@ -194,8 +195,7 @@ def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, attack):
 
     ner = NER()
 
-    k_value = 10e6
-    rho = 1.0
+    
 
     ###
     sentence = ner.data_reduced[ner.data_reduced.sentence == sentence]
@@ -219,20 +219,23 @@ def make_exp(n_exp, dirname, fname, w1, w2, seconds, sentence, attack):
 
 if __name__ == "__main__":
 
-    w1 = 1.0
-    w2 = 5.0
+    w1 = 2.0
+    w2 = 1.0
     seconds = 9000
+    k_value = 10e6
+    rho = 1.0
+    n_exp = 10
 
     sentence_num = 41785
     sentence = f'Sentence: {sentence_num}'
     # sentence = "Sentence: 41785"
     # sentence = "Sentence: 44516"
-    n_exp = 10
+    
     dirname = f'{results_path}ner_path_attraction/w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}/'
 
     for i in range(n_exp):
         fname = f'{dirname}exp{i}_w1_{w1}_w2_{w2}_sentence_{sentence_num}_{seconds}_seconds.pkl'
-        make_exp(i, dirname, fname, w1, w2, seconds, sentence, attack1)
+        make_exp(i, dirname, fname, w1, w2, seconds, sentence, attack1, k_value, rho)
         print(f'Finished Experiment {i}')
 
     
