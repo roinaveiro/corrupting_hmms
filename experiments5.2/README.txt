@@ -1,0 +1,1 @@
+During the code implementation, Experiment 3 refers to analyzing the effect of HMM structure on solution method performance, that is, the experiments in Section 5.2.
