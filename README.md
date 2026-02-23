@@ -29,7 +29,7 @@ The code required to reproduce the experiments in this section is available in t
 
 The `experiment_scripts` folder contains the code to run the algorithmic routines (APS, R&S-MCTS and SA, RME) for all corruption problems (state attraction, state repulsion, distribution disruption, and path attraction).
 
-The `obtain_best_combination` folder contains the code used to identify the optimal hyperparameter combinations for the algorithmic routines (reported in Table A10 for APS and R&S).
+The `obtain_best_combination` folder contains the code used to identify the optimal hyperparameter combinations for the algorithmic routines (reported in Table A10 for R&S).
 
 The `attack_impact_proportion_computation` folder contains the code to compute the mean impact of an attacked observation during structure testing (Table 4).
 
@@ -44,7 +44,7 @@ The code required to reproduce the experiments in this section is available in t
 
 The `experiment_scripts` folder contains the code to run the algorithmic routines (APS, R&S-MCTS and SA, RME) for all corruption problems (state attraction, state repulsion, distribution disruption, and path attraction).
 
-The `obtain_best_combination` folder contains the code used to identify the optimal hyperparameter combinations for the algorithmic routines (reported in Table A11 for APS and R&S).
+The `obtain_best_combination` folder contains the code used to identify the optimal hyperparameter combinations for the algorithmic routines (reported in Table A11 for R&S).
 
 The `attack_impact_proportion_computation` folder contains the code to compute the mean impact of an attacked observation during structure testing (Table 6).
 
