@@ -1,0 +1,1 @@
+For the analysis of the results in this section, the utilities were removed from the scales to which they were previously added in order to obtain positive utilities. While this was done directly during computation for the SA and MCTS results, for APS and RME the scale was removed post hoc after the experiment was conducted.

@@ -1,0 +1,6 @@
+untainted data,tainted data,att_str,solver,comb_num,w1,w2,t,state,k,c,solver_1
+0.3522,0.0941,rep,SA,3,15,1,16,7,10000,-1,SA
+0.3522,0.0915,rep,APS,3,15,1,16,7,10000,-1,APS_A
+0.3522,0.0867,rep,APS,3,15,1,16,7,10000,-1,APS_B
+0.3522,0.1001,rep,MCTS,3,15,1,16,7,10000,-1,MCTS
+0.3522,0.1058,rep,RME,3,15,1,16,7,10000,-1,RME
