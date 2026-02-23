@@ -19,9 +19,39 @@ pip install -e .
 
 ## Section 5.1 Experiments
 
+The code required to reproduce the experiments in this section is available in the folder `experiments5.1`.
+
+The `results` folder contains the CSV files with the experimental outputs and the corresponding PDF plots.
+
 ## Section 5.2 Experiments
 
+The code required to reproduce the experiments in this section is available in the folder `experiments5.2`.
+
+The `experiment_scripts` folder contains the code to run the algorithmic routines (APS, R&S-MCTS and SA, RME) for all corruption problems (state attraction, state repulsion, distribution disruption, and path attraction).
+
+The `obtain_best_combination` folder contains the code used to identify the optimal hyperparameter combinations for the algorithmic routines (reported in Table A10 for APS and R&S).
+
+The `attack_impact_proportion_computation` folder contains the code to compute the mean impact of an attacked observation during structure testing (Table 4).
+
+The `plots` folder contains the scripts used to generate the plots of the evolution of expected utilities over time by algorithm (e.g., Fig. 6), as well as the corresponding plot files.
+
+The `results` folder contains the outputs of all experiments.
+
+
 ## Section 5.3 Experiments
+
+The code required to reproduce the experiments in this section is available in the folder `experiments5.3`.
+
+The `experiment_scripts` folder contains the code to run the algorithmic routines (APS, R&S-MCTS and SA, RME) for all corruption problems (state attraction, state repulsion, distribution disruption, and path attraction).
+
+The `obtain_best_combination` folder contains the code used to identify the optimal hyperparameter combinations for the algorithmic routines (reported in Table A11 for APS and R&S).
+
+The `attack_impact_proportion_computation` folder contains the code to compute the mean impact of an attacked observation during structure testing (Table 6).
+
+The `plots` folder contains the scripts used to generate the plots of the evolution of expected utilities over time by algorithm (e.g., Fig. 7), as well as the corresponding plot files.
+
+The `results` folder contains the outputs of all experiments.  
+
 
 ## Section 5.4 Experiments
 
